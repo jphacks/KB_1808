@@ -1,3 +1,8 @@
+const AWS = require("aws-sdk");
+const dynamoDB = new AWS.DynamoDB.DocumentClient({
+  region: "us-west-2" // DynamoDBのリージョン
+});
+
 exports.handler = async (event, context, callback) => {
 
     // パラメータチェック
@@ -9,6 +14,28 @@ exports.handler = async (event, context, callback) => {
         callback(JSON.stringify(getErrorObj(context, getErrorMessageParameterNotNumber())));
     }
 
+    // const params = {
+    //     TableName: "temperature", // DynamoDBのテーブル名
+    //     KeyConditionExpression: "#PartitionKey = :partition-key-data", // 取得するKey情報
+    //     ExpressionAttributeNames: {
+    //       "#PartitionKey": "uuid", // PartitionKeyのアトリビュート名
+    //     },
+    //     ExpressionAttributeValues: {
+    //       ":partition-key-data": "0001", // 取得したいPartitionKey名
+    //     },
+    //     ScanIndexForward: false, // 昇順か降順か(デフォルトはtrue=昇順)
+    //     Limit: 1 // 取得するデータ件数
+    //   }
+    
+    //   // DynamoDBへのquery処理実行
+    //   dynamoDB.query(params).promise().then((data) => {
+    //     console.log(data);
+        
+    //     callback(response);
+    //   }).catch((err) => {
+    //     console.log(err);
+    //     callback(err);
+    //   });
     const responseObj = {
         "ratio" : getRatio(event['temperature'], 30, 40)
     };
@@ -17,7 +44,7 @@ exports.handler = async (event, context, callback) => {
         statusCode: 200,
         body: JSON.stringify(responseObj)
     };
-    
+
     return response;
 };
 
@@ -45,5 +72,5 @@ function getRatio(temperature, width, target){
     if(temperature < width - target){
         return 0;
     }
-    return (temperature - target) / width * 100;
+    return parseInt((temperature - target) / width * 100, 10);
 }
