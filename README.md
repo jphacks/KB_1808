@@ -72,13 +72,13 @@ LINEのトークに自分の適温の温度を送信するだけで設定完了�
 * LINE Messaging API
 * AWS Lambda
 
-
 #### フレームワーク・ライブラリ・モジュール
-* 
-*
+* arduino-esp32
+* Adafruit_NeoPixel
 
 #### デバイス
 * ものを置く「コースタ型のデバイス」
+* arduino-esp32
 * スマートフォン
 
 
