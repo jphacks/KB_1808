@@ -1,7 +1,4 @@
 const AWS = require("aws-sdk");
-const dynamoDB = new AWS.DynamoDB.DocumentClient({
-  region: "us-west-2" // DynamoDBのリージョン
-});
 
 exports.handler = async (event, context, callback) => {
 
@@ -14,29 +11,8 @@ exports.handler = async (event, context, callback) => {
         callback(JSON.stringify(getErrorObj(context, getErrorMessageParameterNotNumber())));
     }
 
-    // const params = {
-    //     TableName: "temperature", // DynamoDBのテーブル名
-    //     KeyConditionExpression: "#PartitionKey = :partition-key-data", // 取得するKey情報
-    //     ExpressionAttributeNames: {
-    //       "#PartitionKey": "uuid", // PartitionKeyのアトリビュート名
-    //     },
-    //     ExpressionAttributeValues: {
-    //       ":partition-key-data": "0001", // 取得したいPartitionKey名
-    //     },
-    //     ScanIndexForward: false, // 昇順か降順か(デフォルトはtrue=昇順)
-    //     Limit: 1 // 取得するデータ件数
-    //   }
-    
-    //   // DynamoDBへのquery処理実行
-    //   dynamoDB.query(params).promise().then((data) => {
-    //     console.log(data);
-        
-    //     callback(response);
-    //   }).catch((err) => {
-    //     console.log(err);
-    //     callback(err);
-    //   });
     const responseObj = {
+        // 実際はDBからユーザ設定を取得する
         "ratio" : getRatio(event['temperature'], 30, 40)
     };
 
