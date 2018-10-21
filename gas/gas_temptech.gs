@@ -1,32 +1,32 @@
-//CHANNEL_ACCESS_TOKEN‚ğİ’è
-//LINE developer‚Å“o˜^‚ğ‚µ‚½A©•ª‚ÌCHANNEL_ACCESS_TOKEN‚ğ“ü‚ê‚Ä‰º‚³‚¢
+//CHANNEL_ACCESS_TOKENã‚’è¨­å®š
+//LINE developerã§ç™»éŒ²ã‚’ã—ãŸã€è‡ªåˆ†ã®CHANNEL_ACCESS_TOKENã‚’å…¥ã‚Œã¦ä¸‹ã•ã„
 var CHANNEL_ACCESS_TOKEN = '3qEsdrwpZZj0fhuvSBl9FZ9AO0fXF2wuzjMi+QP56eVmNUJ5BTMJqTLIgVyvjPMAyj9qtka3LqrgDv/Q+lPtH/D+waAJB8D/lSv13xJo27pezLDcwY5VJ2P4UeUKAuwwBcFEyJsWvXNLPDPJu/nBhAdB04t89/1O/w1cDnyilFU='; 
 var line_endpoint = 'https://api.line.me/v2/bot/message/reply';
 var aws_endpoint = 'https://31j3bqwtu6.execute-api.us-west-2.amazonaws.com/hakuhuck/setting';
 
 
-//ƒ|ƒXƒg‚Å‘—‚ç‚ê‚Ä‚­‚é‚Ì‚ÅAƒ|ƒXƒgƒf[ƒ^æ“¾
-//JSON‚ğƒp[ƒX‚·‚é
+//ãƒã‚¹ãƒˆã§é€ã‚‰ã‚Œã¦ãã‚‹ã®ã§ã€ãƒã‚¹ãƒˆãƒ‡ãƒ¼ã‚¿å–å¾—
+//JSONã‚’ãƒ‘ãƒ¼ã‚¹ã™ã‚‹
 function doPost(e) {
   
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName("ƒV[ƒg1");
+  var sheet = ss.getSheetByName("ã‚·ãƒ¼ãƒˆ1");
   var range_temp = sheet.getRange(1, 2);
   var range_tole = sheet.getRange(2, 2);
   
   var json = JSON.parse(e.postData.contents);
-  //•ÔM‚·‚é‚½‚ß‚Ìƒg[ƒNƒ“æ“¾
+  //è¿”ä¿¡ã™ã‚‹ãŸã‚ã®ãƒˆãƒ¼ã‚¯ãƒ³å–å¾—
   var reply_token= json.events[0].replyToken;
   
-  var templetures = /‰·“x:[0-9,.]+/;
-  var tolerance = /’Ê’m”ÍˆÍ:[0-9,.]+/;
+  var templetures = /æ¸©åº¦:[0-9,.]+/;
+  var tolerance = /é€šçŸ¥ç¯„å›²:[0-9,.]+/;
   
   
-  //‘—‚ç‚ê‚½LINEƒƒbƒZ[ƒW‚ğæ“¾
+  //é€ã‚‰ã‚ŒãŸLINEãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å–å¾—
   var user_temprature;
-  user_temprature = json.events[0].message.text.match(templetures)[0].replace('‰·“x:',"");
+  user_temprature = json.events[0].message.text.match(templetures)[0].replace('æ¸©åº¦:',"");
   var user_tolerance;
-  user_tolerance = json.events[0].message.text.match(tolerance)[0].replace('’Ê’m”ÍˆÍ:',"");
+  user_tolerance = json.events[0].message.text.match(tolerance)[0].replace('é€šçŸ¥ç¯„å›²:',"");
   
   
   var reply_messages;
@@ -36,9 +36,9 @@ function doPost(e) {
     return;
   }   
   
-  //•ÔM‚·‚é“à—e‚ğì¬
-  reply_messages = ['İ’è‚µ‚Ü‚µ‚½\nİ’è‚Í‚±‚¿‚ç‚ÅŠm”F‚Å‚«‚Ü‚·' + 'http://rurito0125technology.blogspot.com/',];
-  // ƒƒbƒZ[ƒW‚ğ•ÔM
+  //è¿”ä¿¡ã™ã‚‹å†…å®¹ã‚’ä½œæˆ
+  reply_messages = ['è¨­å®šã—ã¾ã—ãŸ'+'',];
+  // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¿”ä¿¡
   messages = reply_messages.map(function (v) {
     return {'type': 'text','text': v};    
   });  
