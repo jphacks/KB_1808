@@ -1,32 +1,32 @@
-//ƒ|ƒXƒg‚Å‘—‚ç‚ê‚Ä‚­‚é‚Ì‚ÅAƒ|ƒXƒgƒf[ƒ^æ“¾
-//JSON‚ğƒp[ƒX‚·‚é
+//ãƒã‚¹ãƒˆã§é€ã‚‰ã‚Œã¦ãã‚‹ã®ã§ã€ãƒã‚¹ãƒˆãƒ‡ãƒ¼ã‚¿å–å¾—
+//JSONã‚’ãƒ‘ãƒ¼ã‚¹ã™ã‚‹
 function doPost(e) {
   var json = JSON.parse(e.postData.contents);
-  //•ÔM‚·‚é‚½‚ß‚Ìƒg[ƒNƒ“æ“¾  
+  //è¿”ä¿¡ã™ã‚‹ãŸã‚ã®ãƒˆãƒ¼ã‚¯ãƒ³å–å¾—  
   var status = json.status;
   if (typeof status ==='undefined'){  
     return;
   }
 
- //•ÔM‚·‚é“à—e‚ğì¬
+ //è¿”ä¿¡ã™ã‚‹å†…å®¹ã‚’ä½œæˆ
   var reply_messages;
   if(status === 100){
-    reply_messages = '—â‚ß‚½‚â‚Å';
+    reply_messages = 'å†·ã‚ã¾ã—ãŸ';
   }
   else if(status === 200 || status === 300){
-    reply_messages = '‚Ê‚é‚­‚È‚Á‚½‚â‚Å';
+    reply_messages = 'é©æ¸©ã«ãªã‚Šã¾ã—ãŸ';
   }
   else{
     return;
   }
     
-  // ƒƒbƒZ[ƒW‚ğ•ÔM
+  // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¿”ä¿¡
   sendHttpPost(reply_messages);
 
   return ContentService.createTextOutput(JSON.stringify({'content': 'post ok'})).setMimeType(ContentService.MimeType.JSON);
 }
 function sendHttpPost(message){
-  var token = 'RJLzO2qt1tFhPi827WCHNAI7IbEZAOd3JM3i099Ir0l';
+  var token = '';
   var options =
    {
      "method"  : "post",
