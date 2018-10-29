@@ -1,28 +1,44 @@
 const AWS = require("aws-sdk");
 
-exports.handler = async (event, context, callback) => {
+AWS.config.update({
+  region: "us-west-2",
+});
 
-    // パラメータチェック
-    if(event['temperature'] == undefined || event['temperature'] == undefined){
-        callback(JSON.stringify(getErrorObj(context, getErrorMessageParameterNotFound())));
-    }
+const docClient = new AWS.DynamoDB.DocumentClient();
 
-    if(typeof event['temperature'] != 'number'){
-        callback(JSON.stringify(getErrorObj(context, getErrorMessageParameterNotNumber())));
-    }
+exports.handler = (event, context, callback) => {
+    const table = "shikuhack";
 
-    const responseObj = {
-        // 実際はDBからユーザ設定を取得する
-        "ratio" : getRatio(event['temperature'], 30, 40)
+    // クエリパラメータはGatewayで保証
+    const coasterMac = event['coaster_mac'];
+
+    // キーだけなら他の方法がよい
+    const params = {
+        TableName: table,
+        FilterExpression: "#key = :key",
+        ExpressionAttributeNames: {
+            "#key": "coaster_mac"
+        },
+        ExpressionAttributeValues: {
+            ":key": coasterMac
+        }
     };
 
-    const response = {
-        statusCode: 200,
-        body: JSON.stringify(responseObj)
-    };
+    docClient.scan(params, function(err, data) {
+        if (err) {
+            console.error("Unable to read item. Error JSON:", JSON.stringify(err, null, 2));
+            callback(null, getErrorObj(context, "Internal Server Error."));
+        } else {
+            console.log("GetItem succeeded:", JSON.stringify(data, null, 2));
+            callback(null, {
+                "statusCode": 200,
+                headers: {},
+                body: JSON.stringify(data["Items"])
+            });
+        }
+    });
 
-    return response;
-};
+}
 
 function getErrorObj(context, message){
     return {
@@ -30,23 +46,4 @@ function getErrorObj(context, message){
         "requestId" : context.awsRequestId,
         "message" : message
     };
-}
-
-function getErrorMessageParameterNotFound(){
-    return "Parameter ['temperature'] dosn't found.";
-}
-
-function getErrorMessageParameterNotNumber(){
-    return "Parameter ['temperature'] isn't Number.";
-}
-
-function getRatio(temperature, width, target){
-
-    if(temperature > width + target){
-        return 100;
-    }
-    if(temperature < width - target){
-        return 0;
-    }
-    return parseInt((temperature - target) / width * 100, 10);
 }
