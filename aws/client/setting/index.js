@@ -1,13 +1,20 @@
 const AWS = require("aws-sdk");
-const dynamoDB = new AWS.DynamoDB.DocumentClient({
-  region: "us-west-2" // DynamoDBのリージョン
+
+AWS.config.update({
+  region: "us-west-2",
 });
 
+const docClient = new AWS.DynamoDB.DocumentClient();
+
 exports.handler = (event, context, callback) => {
+  const tableName = "shikuhack";
+
+  // パラメータはGatewayで保証済み
   const temperature = event['temperature'];
   const error = event['error'];
+
   const params = {
-    TableName: "hakuhuck", // DynamoDBのテーブル名
+    TableName: tableName,
     Item: {
       "uuid": "0001", //　今回は固定
       "setting": {

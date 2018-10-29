@@ -15,16 +15,12 @@ exports.handler = (event, context, callback) => {
     // キーだけなら他の方法がよい
     const params = {
         TableName: table,
-        FilterExpression: "#key = :key",
-        ExpressionAttributeNames: {
-            "#key": "coaster_mac"
-        },
-        ExpressionAttributeValues: {
-            ":key": coasterMac
+        Key: {
+            "coaster_mac": coasterMac
         }
     };
 
-    docClient.scan(params, function(err, data) {
+    docClient.get(params, function(err, data) {
         if (err) {
             console.error("Unable to read item. Error JSON:", JSON.stringify(err, null, 2));
             callback(null, getErrorObj(context, "Internal Server Error."));
@@ -33,7 +29,7 @@ exports.handler = (event, context, callback) => {
             callback(null, {
                 "statusCode": 200,
                 headers: {},
-                body: JSON.stringify(data["Items"])
+                body: JSON.stringify(data["Item"])
             });
         }
     });
