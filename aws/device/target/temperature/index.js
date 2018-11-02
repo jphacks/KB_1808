@@ -12,7 +12,6 @@ exports.handler = (event, context, callback) => {
     // クエリパラメータはGatewayで保証
     const coasterMac = event['coaster_mac'];
 
-    // キーだけなら他の方法がよい
     const params = {
         TableName: table,
         Key: {
@@ -23,9 +22,12 @@ exports.handler = (event, context, callback) => {
     docClient.get(params, function(err, data) {
         if (err) {
             console.error("Unable to read item. Error JSON:", JSON.stringify(err, null, 2));
-            callback(null, getErrorObj(context, "Internal Server Error."));
+            callback(JSON.stringify(getErrorObj(context, "Internal Server Error.")));
         } else {
             console.log("GetItem succeeded:", JSON.stringify(data, null, 2));
+            if(data['Item'] === undefined){
+                callback(JSON.stringify(getErrorObj(context, "The coaster_mac doesn't register.")));
+            }
             callback(null, {
                 "statusCode": 200,
                 headers: {},
@@ -38,8 +40,8 @@ exports.handler = (event, context, callback) => {
 
 function getErrorObj(context, message){
     return {
-        "statusCode" : 400,
-        "requestId" : context.awsRequestId,
+        "status_code" : 400,
+        "request_id" : context.awsRequestId,
         "message" : message
     };
 }
