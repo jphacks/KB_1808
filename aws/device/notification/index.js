@@ -33,7 +33,7 @@ exports.handler = async (event, context, callback) => {
   };
 
   //APIリクエスト
-  const req = https.request(options,  function(res){
+  const req = https.request(options, function(res){
     res.setEncoding('utf8');
     res.on('data', function (body) {
       console.log(body);

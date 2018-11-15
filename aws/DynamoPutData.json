@@ -4,11 +4,13 @@
   "data": [
     {
       "mode": "モード番号",
-      "temperture": "最適温度"
+      "temperature": "最適温度",
+      "isUsed": "このモードを使ったことがあるか"
     },
     {
       "mode": "モード番号",
-      "temperture": "最適温度"
+      "temperature": "最適温度",
+      "isUsed": "このモードを使ったことがあるか"
     }
   ]
 }
