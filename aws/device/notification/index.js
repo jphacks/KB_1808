@@ -11,7 +11,7 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 exports.handler = async (event, context, callback) => {
 
   const ChannelAccessToken = process.env['CHANNEL_ACCESS_TOKEN'];
-  const id = "U7b8ca61f99ffbc2e31a6e460614cc648";
+  const id = process.env['ID'];
 
   const postData = JSON.stringify({
     "messages": [{
