@@ -1,0 +1,14 @@
+{
+  "coaster_mac": "コースターのmac",
+  "line_id": "lineのユーザID",
+  "data": [
+    {
+      "mode": "モード番号",
+      "temperture": "最適温度"
+    },
+    {
+      "mode": "モード番号",
+      "temperture": "最適温度"
+    }
+  ]
+}
