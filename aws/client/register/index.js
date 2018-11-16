@@ -1,4 +1,6 @@
 const AWS = require("aws-sdk");
+const https = require('https');
+
 const dynamoDB = new AWS.DynamoDB.DocumentClient({
   region: "us-west-2" // DynamoDBのリージョン
 });
@@ -9,17 +11,25 @@ const dynamoDB = new AWS.DynamoDB.DocumentClient({
 exports.handler = (event, context, callback) => {
   const tableName = "shikuhack";
 
+  console.log("リクエストが来たよ");
+
   const clientMessage = getClientMessage(event);
 
-  if(!clientMessage.match("/@登録/")){
-    callback(null, JSON.stringify({
-      "status_code" : 200
-    }));
+  if(!clientMessage.match(/@register/)){
+    console.log("登録じゃないよ");
+
+    callback(null, {
+      "statusCode" : 200
+    });
     return;
   }
 
-  const coasterMac = getCoasterMac(clientMessage);
+  console.log("登録だよ");
+
+  const coasterMac = getCoasterMac(clientMessage)[0];
   const lineId = getUserId(event);
+
+  console.log(coasterMac);
 
   const params = {
     TableName: tableName,
@@ -27,6 +37,7 @@ exports.handler = (event, context, callback) => {
       "coaster_mac": coasterMac,
       "line_id": lineId,
       // 初期値は固定
+      // TODO : bankに名称変更
       "data":[
         {
           "mode_id": 1,
@@ -50,16 +61,16 @@ exports.handler = (event, context, callback) => {
   // DynamoDBへのPut処理実行
   dynamoDB.put(params).promise().then((data) => {
     console.log("Put Success");
-    pushMessage("登録に成功しました");
-    callback(null, JSON.stringify({
-        "status_code" : 200
-      }));
+    pushMessage("登録に成功しました", lineId);
+    callback(null, {
+        "statusCode" : 200
+      });
   }).catch((err) => {
     console.log(err);
-    pushMessage("登録に失敗しました");
-    callback(JSON.stringify({
-        "status_code" : 400
-      }));
+    pushMessage("登録に失敗しました", lineId);
+    callback(null, {
+        "statusCode" : 200
+      });
   });
 
 }
@@ -128,7 +139,7 @@ function getClientMessage(event){
  * @param {String} clientMessage
  */
 function getCoasterMac(clientMessage){
-  const pattern = "([0-9a-fA-F]+)-([0-9a-fA-F]+)-([0-9a-fA-F]+)-([0-9a-fA-F]+)-([0-9a-fA-F]+)";
+  const pattern = /[0-9a-fA-F]+-[0-9a-fA-F]+-[0-9a-fA-F]+-[0-9a-fA-F]+-[0-9a-fA-F]+-[0-9a-fA-F]+/;
   return clientMessage.match(pattern);
 }
 
