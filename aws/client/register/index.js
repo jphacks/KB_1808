@@ -26,8 +26,19 @@ exports.handler = (event, context, callback) => {
 
   console.log("登録だよ");
 
-  const coasterMac = getCoasterMac(clientMessage)[0];
+  const coasterMacData = getCoasterMac(clientMessage);
   const lineId = getUserId(event);
+
+  // macアドレス確認
+  if(coasterMacData === null){
+    pushMessage("登録内容が不正です", lineId);
+    callback(null, {
+        "statusCode" : 200
+      });
+    return;
+  }
+
+  const coasterMac = coasterMacData[0];
 
   console.log(coasterMac);
 
@@ -37,22 +48,38 @@ exports.handler = (event, context, callback) => {
       "coaster_mac": coasterMac,
       "line_id": lineId,
       // 初期値は固定
-      // TODO : bankに名称変更
-      "data":[
+      "bank":[
         {
           "mode_id": 1,
           "temperature": 50,
-          "isUsed": false
         },
         {
           "mode_id": 2,
           "temperature": 50,
-          "isUsed": false
         },
         {
           "mode_id": 3,
           "temperature": 50,
-          "isUsed": false
+        },
+        {
+          "mode_id": 4,
+          "temperature": 50,
+        },
+        {
+          "mode_id": 5,
+          "temperature": 50,
+        },
+        {
+          "mode_id": 6,
+          "temperature": 50,
+        },
+        {
+          "mode_id": 7,
+          "temperature": 50,
+        },
+        {
+          "mode_id": 8,
+          "temperature": 50,
         }
       ]
     }
@@ -102,17 +129,14 @@ function pushMessage(message, lineId){
     res.setEncoding('utf8');
     res.on('data', function (body) {
       console.log(body);
-      context.succeed('handler complete');
     });
   }).on('error', function(e) {
-    context.done('error', e);
     console.log(e);
   });
 
   req.on('error', function(e) {
     const message = "通知に失敗しました. LINEから次のエラーが返りました: " + e.message;
     console.error(message);
-    context.fail(message);
   });
 
   req.write(postData);
