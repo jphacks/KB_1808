@@ -9,7 +9,7 @@
 #include <Adafruit_NeoPixel.h>
 #include <ArduinoJson.h>
 
-#define DELAY_TIME 40
+#define DELAY_TIME 60
 
 const char* ssid = "JashiPhone";
 const char* password = "WonderlandAlice";
@@ -31,7 +31,7 @@ const int PIN = 32;
 const float VOLT = 5;
 const int ANALOG_MAX = 4096;
 
-StaticJsonBuffer<200> jsonBuffer;
+DynamicJsonDocument doc;
 
 void setup() {
   Serial.begin(115200);
@@ -58,7 +58,7 @@ void setup() {
     colorWipe(strip.Color(0, 0, 0), DELAY_TIME);
     delay(250);
     colorWipe(strip.Color(MAX_VAL, MAX_VAL, 0), DELAY_TIME);
-    
+
     Serial.print(".");
   }
 
@@ -76,6 +76,7 @@ void loop() {
   float voltage = (analogRead(PIN) * VOLT * 1000) / ANALOG_MAX;
   float tp = voltage / 10;
 
+  Serial.print("Temperature : ");
   Serial.print(tp);
   Serial.println("C");
 
@@ -85,21 +86,57 @@ void loop() {
   String requestBody = "{\"temperature\":" + String((int)tp) + "}";
   int httpCode = http.POST(requestBody);
 
-  Serial.printf("Response: %d", httpCode);
-  Serial.println();
+  //Serial.printf("Response: %d", httpCode);
+  //Serial.println();
+  
   if (httpCode == HTTP_CODE_OK) {
-    String body = http.getString();
-    Serial.print("Response Body: ");
-    Serial.println(body);
+    String ratio_str = jsonPurser(http.getString());
+    int ratio = ratio_str.toInt();
 
-    JsonObject& root = jsonBuffer.parseObject(body);
-    int ratio = root["ratio"];
-    Serial.println(ratio);
+    Serial.print("Ratio : ");
+    Serial.print(ratio_str);
+    Serial.print("% abs:");
+    Serial.print(abs(ratio));
+    Serial.println("");
+
+    // colorize
+    int led_r, led_g, led_b;
+    if(ratio > 0) led_r = MAX_VAL * ratio / 100;
+    else led_r = 0;
+    
+    if(ratio >= 0 && ratio < 50) led_g = MAX_VAL * (1.0 - (abs(ratio) / 50.0));
+    else if (ratio > -50 && ratio < 0) led_g = MAX_VAL * (1.0 - (abs(ratio) / 50.0));
+    else led_g = 0;
+    
+    if(ratio < 0) led_b = MAX_VAL * abs(ratio) / 100;
+    else led_b = 0;
+    
+    Serial.print("[R:");
+    Serial.print(led_r);
+    Serial.print(" G:");
+    Serial.print(led_g);
+    Serial.print(" B:");
+    Serial.print(led_b);
+    Serial.println("]");
+
+    colorWipe(strip.Color(led_r, led_g, led_b), DELAY_TIME);
   }
 
-  
-
   delay(5000);
+}
+
+String jsonPurser(String json_str) {
+  deserializeJson(doc, json_str);
+  JsonObject obj = doc.as<JsonObject>();
+
+  String json_body = obj["body"];
+
+  deserializeJson(doc, json_body);
+  obj = doc.as<JsonObject>();
+
+  String ratio = obj["ratio"];
+
+  return ratio;
 }
 
 // Fill the dots one after the other with a color
@@ -117,6 +154,7 @@ void rainbow(uint8_t wait) {
   for (j = 0; j < 256; j++) {
     for (i = 0; i < strip.numPixels(); i++) {
       strip.setPixelColor(i, Wheel((i + j) & 255));
+      delay(10);
     }
     strip.show();
     delay(wait);
